@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/CMakeProject1/config
+/.vs
+/out/build/Linux-GCC-Debug
+/out/build/Mingw64-Debug/.cmake/api/v1
+/out/build/Mingw64-Debug/CMakeFiles
+/out/build/Mingw64-Debug
+/out/build/WSL-GCC-Debug
+/out/build/x64-Debug
+/_tst_cpp.cpp
