@@ -44,27 +44,100 @@ inline void swap(A& a1, A& a2)
         std::swap(a1.a, a2.a);
 }
 #endif  // тестовый класс A
-
-
 #if 0
 void f()
 {
 }
 #endif // 
-
 #if 0
 void f()
 {
 }
 #endif // 
-
 #if 0
 void f()
 {
 }
 #endif // 
-
 #if 1
+void f()
+{
+}
+#endif // 
+
+#if 0
+// https://habr.com/ru/company/otus/blog/546158/
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <type_traits>
+#include <variant>
+#include <vector>
+
+// the variant to visit
+using var_t = std::variant<int, long, double, std::string>;
+
+// helper constant for the visitor #3
+template<class> inline constexpr bool always_false_v = false;
+
+// helper type for the visitor #4
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+// explicit deduction guide (not needed as of C++20)
+template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
+
+struct gg {
+    template <class T>
+    void operator()(const T& arg) { std::cout  << "<>" << c << arg; }
+    void operator()(const int& arg) { std::cout << "int" << c << arg; }
+    char c;
+};
+
+void f()
+{
+    std::vector<var_t> vec = { 10, 15l, 1.5, "hello" };
+    for (auto& v : vec) {
+
+        // 1. void visitor, only called for side-effects (here, for I/O)
+        auto ff = [](auto&& arg) {std::cout << arg; };
+        std::visit(gg{':'}, v);
+
+        // 2. value-returning visitor, demonstrates the idiom of returning another variant
+        var_t w = std::visit([](auto&& arg) -> var_t {return arg + arg; }, v);
+
+        // 3. type-matching visitor: a lambda that handles each type differently
+        std::cout << ". After doubling, variant holds ";
+        std::visit([](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, int>)
+                std::cout << "int with value " << arg << '\n';
+            else if constexpr (std::is_same_v<T, long>)
+                std::cout << "long with value " << arg << '\n';
+            else if constexpr (std::is_same_v<T, double>)
+                std::cout << "double with value " << arg << '\n';
+            else if constexpr (std::is_same_v<T, std::string>)
+                std::cout << "std::string with value " << std::quoted(arg) << '\n';
+            else
+                static_assert(always_false_v<T>, "non-exhaustive visitor!");
+            }, w);
+    }
+
+    for (auto& v : vec) {
+        // 4. another type-matching visitor: a class with 3 overloaded operator()'s
+        // Note: The `(auto arg)` template operator() will bind to `int` and `long`
+        //       in this case, but in its absence the `(double arg)` operator()
+        //       *will also* bind to `int` and `long` because both are implicitly
+        //       convertible to double. When using this form, care has to be taken
+        //       that implicit conversions are handled correctly.
+        std::visit(overloaded{
+            [](auto arg) { std::cout << arg << ' '; },
+            [](double arg) { std::cout << std::fixed << arg << ' '; },
+            [](const std::string& arg) { std::cout << std::quoted(arg) << ' '; }
+            }, v);
+    }
+}
+#endif //  std::variant + std::visit
+
+#if 0
 
 #include <fstream>
 #include <string>
@@ -110,7 +183,7 @@ void f()
         std::cout << "U+" << std::hex << std::setw(4) << std::setfill('0')
         << static_cast<uint16_t>(c) << ' ';
 }
-#endif // 
+#endif // converting unicode using <codecvt>
 
 #if 0
 #include <iostream>
@@ -187,6 +260,6 @@ int main()
         {
             std::cout << "UNKNOWN_EXCEPTION\n";
         }
-        std::cout << ">>>>>>>>>>>>>>\n";
+        std::cout << "\n>>>>>>>>>>>>>>\n";
         return 0;
 }
