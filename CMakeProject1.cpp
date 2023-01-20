@@ -4,12 +4,29 @@
 #include <windows.h>
 #endif // WIN32
 #include <iostream>
+
+
+template <class Ch, class Tr, class Last>
+void print(std::basic_ostream<Ch, Tr>&os, const Last& last) 
+{
+    os << last << "\n";
+}
+
+template <class Ch, class Tr, class First, class... Other>
+void print(std::basic_ostream<Ch, Tr>& os,
+    const First& first, const Other&... other)
+{
+    os << first << ", ";
+    print(os, other...);
+}
+
 #if 0
 #define PRINT1(v)
+#define PRINTN(...)
 #else
-#define PRINT1(v) std::cout << #v << "="<< v << "\n";
+#define PRINT1(v) std::cerr << #v << "=" << v << "\n";
+#define PRINTN(...) print(std::cerr, "[" #__VA_ARGS__ "]", __VA_ARGS__);
 #endif // 0
-
 
 
 #if 1
@@ -44,11 +61,7 @@ inline void swap(A& a1, A& a2)
         std::swap(a1.a, a2.a);
 }
 #endif  // тестовый класс A
-#if 0
-void f()
-{
-}
-#endif // 
+
 #if 0
 void f()
 {
@@ -65,6 +78,18 @@ void f()
 }
 #endif // 
 
+#if 0
+void f()
+{
+#define A 1
+    const char* b = "QWERT";
+    int i = 33;
+    double pi = 3.14;
+    print(std::cerr,  i, pi);
+    PRINT1(A);
+    PRINTN(A, b, i, pi);
+}
+#endif // debug PRINT1/PRINTN
 #if 0
 // https://habr.com/ru/company/otus/blog/546158/
 #include <iomanip>
@@ -136,7 +161,6 @@ void f()
     }
 }
 #endif //  std::variant + std::visit
-
 #if 0
 
 #include <fstream>
@@ -184,7 +208,6 @@ void f()
         << static_cast<uint16_t>(c) << ' ';
 }
 #endif // converting unicode using <codecvt>
-
 #if 0
 #include <iostream>
 #include <string>
@@ -216,7 +239,6 @@ void f()
     }
 }
 #endif // standard unicode C++ conversion sample
-
 #if 0
 void f()
 {
