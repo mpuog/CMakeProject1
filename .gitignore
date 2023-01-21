@@ -11,3 +11,7 @@
 /out/build/WSL-GCC-Debug
 /out/build/x64-Debug
 /_tst_cpp.cpp
+/.ccls-cache
+/.replit
+/replit.nix
+/text.txt
