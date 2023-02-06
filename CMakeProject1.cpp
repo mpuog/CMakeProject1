@@ -72,9 +72,38 @@ void f()
 {
 }
 #endif // 
+
 #if 1
+
+#include <iostream>
+#include <vector>
+#include <functional>
+#include <algorithm>
+
+bool ope(int i, int j) 
+{
+    return i == j;
+}
+
+std::vector<int> ftd = { 1,2,3,7,9 };
+
+bool iod1(int n)
+{
+    return (std::find_if(ftd.begin(), ftd.end(), 
+        std::bind(ope, std::placeholders::_1, n)) != ftd.end());
+}
+
+bool iod2(int n)
+{
+    return (std::find_if(ftd.begin(), ftd.end(), 
+        [n](int i) { return i == n; }) != ftd.end());
+}
+
+
 void f()
 {
+    std::cout << iod1(0) << iod1(1) << iod1(4) << iod1(7) << "\n";
+    std::cout << iod2(0) << iod2(1) << iod2(4) << iod2(7) << "\n";
 }
 #endif // 
 
